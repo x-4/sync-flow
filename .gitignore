@@ -1,0 +1,73 @@
+# 真实密钥与运行时数据一律不入库
+.env
+.env.*
+!.env.example
+
+# 运行时数据
+data/
+logs/
+*.log
+
+# 安全分析类文档：逐条记录弱点清单，属"内部资料面"。
+# 其作用与 docs/ 相同（信息价值高、但绝不可随包发布），
+# 因此一并排除。阅后建议直接删除，不要长期留在工作目录。
+*评估报告*.md
+*评估*.md
+
+# 分发产物（由打包脚本按白名单生成，不入库）
+dist/
+output.zip
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# 工作区工具目录（非项目内容）
+.codebuddy/
+
+# 开发侧资产：不随仓库发布（本地保留）
+# 这些目录不影响部署——Vercel 由 .vercelignore 裁剪，Docker 只 COPY
+# supervisor.js/lib/vendor/package.json，两者都不引用它们。
+# 如需恢复回归能力，从 1758.tar（全量包）中取回 tests/ 即可。
+docs/
+scripts/
+tests/
+
+# 项目文档：本地保留，不随仓库发布。
+#
+# 原因：文档天然携带大量内部术语与设计说明，随仓库发布等于附带一份
+# 项目自述。这些文件对运行期零作用——Docker 不 COPY、Vercel 函数
+# 不引用、依赖闭包检查也不包含它们。
+#
+# 已重写为纯业务视角的四份（README / USAGE / DEPLOYMENT-RUNBOOK /
+# DEPLOYMENT-MODES）当前无敏感表述，若确需仓库门面说明文件，
+# 可用 `git add -f README.md` 单独恢复。
+# CHANGELOG.md 为开发演进记录，术语密度最高，不建议恢复。
+README.md
+USAGE.md
+DEPLOYMENT-RUNBOOK.md
+DEPLOYMENT-MODES.md
+CHANGELOG.md
+
+# ⚠️ 注意：不要忽略 public/ —— Vercel 构建阶段校验 outputDirectory，
+# 默认查找 public/，缺失会直接报 "No Output Directory named public found"。
+# 该目录仅含一个 .gitkeep 占位文件，必须入库。
+
+# 依赖与缓存
+#
+# 锚定根目录（/node_modules/）而非写 node_modules/。
+# 未锚定的写法会匹配任意层级，把项目内自带依赖的目录一并忽略掉。
+# 当前 vendor/ 已做到自包含、不依赖任何 node_modules 目录，
+# 但保持锚定写法可以避免今后 subtree 进来的依赖被静默漏出仓库。
+/node_modules/
+.npm/
+*.tsbuildinfo
+
+# 编辑器 / 系统
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# 本地导出的未推送提交包（不进交付面与版本库）
+*.bundle

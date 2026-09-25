@@ -1,0 +1,8 @@
+{
+  "name": "prebuild-loader",
+  "version": "1.0.0",
+  "description": "Locates the prebuilt native binary shipped alongside the engine",
+  "main": "index.js",
+  "private": true,
+  "license": "MIT"
+}

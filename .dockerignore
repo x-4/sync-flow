@@ -1,0 +1,44 @@
+# 构建上下文裁剪：把不该进镜像的东西挡在外面，减小上下文体积
+
+# 真实密钥与本地环境
+.env
+.env.*
+!.env.example
+
+# 运行时数据（必须由外部卷提供，不能烤进镜像）
+data/
+logs/
+*.log
+
+# 本地依赖与缓存（本服务不依赖任何 npm 包，正常情况下不存在）
+#
+# 锚定根目录（/node_modules/）而非写 node_modules/。
+# 未锚定的写法会匹配任意层级，把项目内自带依赖的目录一并挡在镜像外，
+# 导致运行时静默降级（功能正常、吞吐下降十几倍，只在启动日志里
+# 留一行 native/pure-js 的差别）。保持锚定可避免今后 subtree 进来的
+# 依赖被漏掉。
+/node_modules/
+.npm/
+
+# 版本控制与 CI
+.git/
+.gitignore
+.github/
+
+# 文档（README 等无需进入镜像；如需随镜像分发可移除此行）
+docs/
+README.md
+
+# 测试与工具（不属于部署产物，运行时与构建期都不需要）
+tests/
+eslint.config.js
+
+# 编辑器与系统文件
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# 构建与部署辅助文件
+Dockerfile
+.dockerignore

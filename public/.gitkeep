@@ -1,0 +1,3 @@
+# 占位文件：Vercel 构建产物校验要求 outputDirectory 存在。
+# 本项目的产物是 api/index.js 函数（不是静态站点），此处仅为满足
+# "No Output Directory named public found" 的校验，无实际内容。

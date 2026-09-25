@@ -1,0 +1,45 @@
+# 跨平台换行符与文件类型规范
+#
+# 目的：保证在 Windows / macOS / Linux 之间 clone 后行为一致。
+#
+# 核心风险（本文件存在的主要原因）：
+#   vendor/native-accel/accel/prebuilds/ 下的 *.node 是**二进制**预编译产物。
+#   若被 Git 当作文本做换行符转换（CRLF），产物会被静默损坏，
+#   表现为运行期"加载加速件失败 → 悄悄降级到便携实现"，极难排查。
+#   因此必须显式声明为 binary。
+
+# 默认：自动检测文本，统一以 LF 存储
+* text=auto eol=lf
+
+# 源码（显式 LF，避免 CRLF 混入）
+*.js    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Dockerfile / ignore 文件
+Dockerfile      text eol=lf
+.dockerignore   text eol=lf
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+
+# 原生预编译产物：绝不转换（关键）
+*.node  binary
+
+# 其他二进制资源
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.tar   binary
+*.gz    binary
+*.zip   binary
+
+# 构建与运行产物：不参与语言统计、不参与 diff
+data/**     -diff -merge linguist-generated
+0922.tar.gz -diff -merge linguist-generated

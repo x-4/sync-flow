@@ -1,0 +1,69 @@
+# Vercel 上传集合裁剪
+#
+# 目的有三个，都很实际：
+#   1. 缩小上传体积（本地 data/ 和打包产物没必要上传）
+#   2. 缩小"函数发现"的候选面
+#   3. 避免把常驻部署用不到的文件带进函数打包集合
+#
+# 语法与 .gitignore 一致。注意：不要排除 lib/ 与 vendor/——
+# 它们既是 api/index.js 的静态依赖，也是 vercel.json 的 includeFiles
+# 需要注入的内容。
+#
+# ⚠️ 重要：不要把常驻入口改名为 server.js。
+#    Vercel 的框架检测器把「根目录存在 server.js」当作"这是一个 Node
+#    服务"的判据；命中后会改用 @vercel/backends 处理整个项目，并忽略
+#    @vercel/node —— 那样 api/ 目录就不会被构建成函数了。
+#    详见 api/index.js 顶部注释。
+
+# ── 本地运行时数据 ──────────────────────────────────────────────
+data/
+
+# ── 本地打包产物 ────────────────────────────────────────────────
+*.tar.gz
+*.tgz
+*.zip
+
+# ── 项目文档（部署不需要，本地保留即可）─────────────────────────
+#
+# 这些文件对运行期零作用：Docker 不 COPY，函数不引用，
+# 依赖闭包检查也不包含它们。
+# 但它们天然携带内部术语与设计说明，进上传集等于附带一份项目自述，
+# 因此一并裁剪。Git 侧已通过 .gitignore 排除，这里是第二道保险
+# （覆盖 vercel CLI 直接从工作目录上传的路径）。
+docs/archive/
+CHANGELOG.md
+README.md
+USAGE.md
+DEPLOYMENT-RUNBOOK.md
+DEPLOYMENT-MODES.md
+*评估报告*.md
+*评估*.md
+
+# ── 本地脚本（命令行 PoC / 预检 / 打包，不是 HTTP handler）───────
+scripts/
+
+# ── 本地测试（tests/ 由 npm test 驱动，与部署无关）───────────────
+tests/
+
+# ── 版本控制与编辑器 ────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# ── 容器相关（Vercel 用不到 Docker）─────────────────────────────
+Dockerfile
+.dockerignore
+
+# ── 本地依赖（本项目零 npm 依赖，正常情况下不存在）──────────────
+node_modules/
+.npm/
+
+# 注意：不要在此排除 .env.example —— 它是占位值模板，
+# 保留它便于在平台界面核对该配哪些环境变量。
+#
+# 注意：不要排除 supervisor.js —— 它不叫 server.js，不会触发框架检测，
+# 保留它可以让"Vercel 与自建机使用同一份仓库"这件事保持可核对。

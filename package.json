@@ -1,0 +1,13 @@
+{
+    "name": "aether-node",
+    "version": "2.13.1",
+    "main": "supervisor.js",
+    "private": true,
+    "engines": {
+        "node": ">=18"
+    },
+    "scripts": {
+        "start": "node supervisor.js",
+        "build": "exit 0"
+    }
+}
